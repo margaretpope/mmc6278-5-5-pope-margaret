@@ -1,0 +1,37 @@
+{
+  "name": "music_shop_api",
+  "version": "1.0.0",
+  "description": "The Music Shop API assignment using MySQL and Express.",
+  "main": "index.js",
+  "config": {
+    "DB_NAME": "music_shop_db"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "npm run mysql && nodemon index.js",
+    "test": "npm run mysql && mocha test/tests.js $FLAG --exit; npm run mysql:stop",
+    "test:watch": "export FLAG=--watch && npm test",
+    "mysql": "npm run mysql:restart && npm run mysql:check",
+    "mysql:restart": "npm run mysql:stop; npm run mysql:start",
+    "mysql:start": "export FLAG=-d && npm run mysql:run",
+    "mysql:start:log": "export FLAG=-it && npm run mysql:run",
+    "mysql:start:shell": "npm run mysql:restart && npm run mysql:check && npm run mysql:shell",
+    "mysql:run": "docker run $FLAG --rm -p 3306:3306 -v $(pwd)/schema:/docker-entrypoint-initdb.d --name=mysql-sandbox -e MYSQL_ALLOW_EMPTY_PASSWORD=root -e MYSQL_DATABASE=$npm_package_config_DB_NAME mysql:8 mysqld --authentication_policy=mysql_native_password",
+    "mysql:stop": "docker container stop mysql-sandbox",
+    "mysql:shell": "docker exec -it mysql-sandbox mysql",
+    "mysql:check": "until docker exec mysql-sandbox mysql -e \"use $npm_package_config_DB_NAME; show tables;\"; do echo ...; sleep 1; done && sleep 3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.1",
+    "mysql2": "^2.3.3"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "nodemon": "^2.0.16",
+    "supertest": "^6.2.3"
+  }
+}
